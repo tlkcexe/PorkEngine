@@ -11,13 +11,168 @@
 
 ## Αρχιτεκτονική Συστήματος (UML)
 
-<a href="Game%20Engine%20Architecture-2026-03-30-132254.svg" target="_blank">
-  <img src="Game%20Engine%20Architecture-2026-03-30-132254.svg" width="100%" alt="Game Engine Architecture Diagram">
-</a>
+```mermaid
+classDiagram
+    %% ==========================================
+    %% 1. MODEL LAYER
+    %% ==========================================
+    class Player {
+        +currentLocation : Room
+        +inventory : List~Item~
+    }
+    class Room {
+        +description : String
+        +exits : List~Exit~
+        +items : List~Item~
+        +npcs : List~NPC~
+    }
+    class Exit {
+        +targetRoom : Room
+        +isLocked : boolean
+    }
+    class Item {
+        +name : String
+        +description : String
+    }
+    class NPC {
+        +name : String
+        +stateMachine : NpcStateMachine
+    }
 
-*(🔍 **Tip:** Κάνε κλικ πάνω στην εικόνα ή [ΕΔΩ](Game%20Engine%20Architecture-2026-03-30-132254.svg) για να την ανοίξεις σε νέα καρτέλα. Εκεί μπορείς να κάνεις όσο ζουμ θέλεις χωρίς να χαλάει η ποιότητα!)*
+    Player "1" --> "1" Room : currentLocation
+    Player "1" *-- "*" Item : has inventory
+    Room "1" *-- "*" Exit : has exits
+    Room "1" *-- "*" Item : has items
+    Room "1" *-- "*" NPC : has NPCs
+    Exit "*" --> "1" Room : leads to
 
----
+    %% ==========================================
+    %% 2. ENGINE CORE
+    %% ==========================================
+    class GameEngine {
+        +mainLoop()
+    }
+    class GameState {
+        +player : Player
+        +currentSessionData
+    }
+    class ConsoleUI {
+        +print(message)
+        +getInput() : String
+    }
+
+    GameEngine --> GameState
+    GameEngine --> ConsoleUI
+    GameState --> Player
+
+    %% ==========================================
+    %% 3. GAME LOADER SYSTEM
+    %% ==========================================
+    class GameLoader {
+        <<interface>>
+        +loadGame()
+    }
+    class JsonGameLoader {
+        +parseJson()
+    }
+    class RoomRegistry {
+        +getRoom(id)
+    }
+    class ItemRegistry {
+        +getItem(id)
+    }
+
+    GameLoader <|.. JsonGameLoader
+    JsonGameLoader ..> RoomRegistry : populates
+    JsonGameLoader ..> ItemRegistry : populates
+
+    %% ==========================================
+    %% 4. COMMAND SYSTEM
+    %% ==========================================
+    class CommandDispatcher {
+        +dispatch(input)
+    }
+    class CommandParser {
+        +tokenize()
+    }
+    class SynonymMap {
+        +getPrimaryVerb()
+    }
+    class CommandRegistry {
+        +getCommand(verb)
+    }
+    class Command {
+        <<interface>>
+        +execute(args, gameState)
+    }
+    
+    %% Διακριτές Εντολές βάσει χρονοδιαγράμματος
+    class GoCommand
+    class TakeCommand
+    class DropCommand
+    class LookCommand
+    class MultiObjectCommand
+    class UseCommand
+    class InspectCommand
+    class CombineCommand
+    class TalkCommand
+    class GiveCommand
+
+    CommandDispatcher --> CommandParser
+    CommandDispatcher --> CommandRegistry
+    CommandParser --> SynonymMap
+    CommandRegistry *-- "*" Command : maps verbs to
+
+    Command <|.. GoCommand
+    Command <|.. TakeCommand
+    Command <|.. DropCommand
+    Command <|.. LookCommand
+    Command <|.. MultiObjectCommand
+    Command <|.. UseCommand
+    Command <|.. InspectCommand
+    Command <|.. CombineCommand
+    Command <|.. TalkCommand
+    Command <|.. GiveCommand
+
+    GameEngine --> CommandDispatcher
+
+    %% ==========================================
+    %% 5. EVENT & CONDITION SYSTEM
+    %% ==========================================
+    class ConditionSystem {
+        +checkRequirements()
+    }
+    class EventSystem {
+        +triggerEvent()
+    }
+    class GameFlags {
+        +winCondition : boolean
+        +loseCondition : boolean
+    }
+
+    ConditionSystem ..> GameState : reads
+    EventSystem --> GameFlags : updates
+    Command ..> ConditionSystem : checks
+    Command ..> EventSystem : triggers
+
+    %% ==========================================
+    %% 6. NPC SYSTEM (BONUS)
+    %% ==========================================
+    class NpcStateMachine {
+        +currentState
+        +transition()
+    }
+    class NpcRegistry {
+        +getNpc(id)
+    }
+    class NpcStagingManager {
+        +updateNpcLocations()
+    }
+
+    NPC "1" *-- "1" NpcStateMachine
+    NpcRegistry *-- "*" NPC
+    NpcStagingManager ..> NpcRegistry
+    JsonGameLoader ..> NpcRegistry : populates
 
 ## 1. Ποιες είναι οι απαιτήσεις του project
 Αντικείμενο του έργου είναι η αντικειμενοστραφής σχεδίαση (ΟΟΡ) και υλοποίηση μιας επαναχρησιμοποιήσιμης μηχανής (engine) για text-based adventure παιχνίδια σε Java. Ο πρωταρχικός στόχος είναι η εφαρμογή θεμελιωδών αρχών αρχιτεκτονικής λογισμικού, με έμφαση στον διαχωρισμό αρμοδιοτήτων (Separation of Concerns) και στο Open/Closed Principle (OCP).
