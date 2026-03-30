@@ -172,7 +172,7 @@ classDiagram
     NPC "1" *-- "1" NpcStateMachine
     NpcRegistry *-- "*" NPC
     NpcStagingManager ..> NpcRegistry
-    JsonGameLoader ..> NpcRegistry : populates
+    JsonGameLoader ..> NpcRegistry : populates```
 
 ## 1. Ποιες είναι οι απαιτήσεις του project
 Αντικείμενο του έργου είναι η αντικειμενοστραφής σχεδίαση (ΟΟΡ) και υλοποίηση μιας επαναχρησιμοποιήσιμης μηχανής (engine) για text-based adventure παιχνίδια σε Java. Ο πρωταρχικός στόχος είναι η εφαρμογή θεμελιωδών αρχών αρχιτεκτονικής λογισμικού, με έμφαση στον διαχωρισμό αρμοδιοτήτων (Separation of Concerns) και στο Open/Closed Principle (OCP).
