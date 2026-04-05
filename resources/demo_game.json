@@ -1,0 +1,58 @@
+{
+  "gameName": "Dungeon Escape: The Awakened",
+  "startingRoom": "room_cell",
+  "rooms": [
+    {
+      "id": "room_cell",
+      "name": "Dank Cell",
+      "description": "You awaken in a cold, damp cell. The stone walls are covered in moss, and the air smells of decay. A heavy iron door stands to the north.",
+      "items": [],
+      "exits": [
+        { "direction": "north", "targetRoom": "room_corridor", "isLocked": false }
+      ]
+    },
+    {
+      "id": "room_corridor",
+      "name": "Shadowy Corridor",
+      "description": "A long corridor lit by flickering torches. To the south is your cell. To the west, you hear the faint sound of dripping water. To the east, a heavy wooden door. To the north, a massive gate blocks the exit.",
+      "items": [],
+      "exits": [
+        { "direction": "south", "targetRoom": "room_cell", "isLocked": false },
+        { "direction": "west", "targetRoom": "room_storage", "isLocked": false },
+        { "direction": "east", "targetRoom": "room_guardroom", "isLocked": false },
+        { "direction": "north", "targetRoom": "room_exit", "isLocked": true }
+      ]
+    },
+    {
+      "id": "room_storage",
+      "name": "Forgotten Storage",
+      "description": "A dusty storage room filled with broken crates and old barrels. It looks like it hasn't been used in years. The only way out is back east.",
+      "items": [
+        { "id": "item_torch", "name": "torch", "description": "A sturdy wooden torch wrapped in oil-soaked cloth. It could provide light or a desperate weapon." }
+      ],
+      "exits": [
+        { "direction": "east", "targetRoom": "room_corridor", "isLocked": false }
+      ]
+    },
+    {
+      "id": "room_guardroom",
+      "name": "Guard's Quarters",
+      "description": "A small room that serves as a resting place for guards. There is a simple cot and a table scattered with playing cards. The corridor is to the west.",
+      "items": [
+        { "id": "item_key", "name": "key", "description": "A heavy, rusted iron key. It looks important enough to open the main gate." }
+      ],
+      "exits": [
+        { "direction": "west", "targetRoom": "room_corridor", "isLocked": false }
+      ]
+    },
+    {
+      "id": "room_exit",
+      "name": "The Outside",
+      "description": "The cool night air hits your face. You have escaped the dungeon. Freedom is finally yours.",
+      "items": [],
+      "exits": [
+        { "direction": "south", "targetRoom": "room_corridor", "isLocked": false }
+      ]
+    }
+  ]
+}
