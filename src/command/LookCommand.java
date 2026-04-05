@@ -1,27 +1,27 @@
 package command;
 
 import engine.GameState;
-import model.Item;
 import model.Room;
+import ui.ConsoleUI;
 import java.util.List;
 
 public class LookCommand implements Command {
     @Override
-    public void execute(List<String> args, GameState gameState) {
-        Room currentRoom = gameState.getPlayer().getCurrentLocation();
+    public void execute(List<String> args, GameState gameState, ConsoleUI ui) {
+        Room currentRoom = gameState.getPlayer().getCurrentRoom();
         
-        System.out.println("--- " + currentRoom.getName() + " ---");
-        System.out.println(currentRoom.getDescription());
+        ui.printMessage("--- " + currentRoom.getName() + " ---");
+        ui.printMessage(currentRoom.getDescription());
         
         if (currentRoom.getItems() != null && !currentRoom.getItems().isEmpty()) {
-            System.out.print("You see the following items here: ");
+            StringBuilder itemsStr = new StringBuilder("You see the following items here: ");
             for (int i = 0; i < currentRoom.getItems().size(); i++) {
-                System.out.print(currentRoom.getItems().get(i).getName());
+                itemsStr.append(currentRoom.getItems().get(i).getName());
                 if (i < currentRoom.getItems().size() - 1) {
-                    System.out.print(", ");
+                    itemsStr.append(", ");
                 }
             }
-            System.out.println();
+            ui.printMessage(itemsStr.toString());
         }
     }
 }
