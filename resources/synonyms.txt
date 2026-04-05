@@ -1,0 +1,4 @@
+take:grab,pick,get,collect
+drop:leave,put,discard
+go:move,walk,run,head
+look:inspect,examine,check,observe
