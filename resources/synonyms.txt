@@ -2,3 +2,7 @@ take:grab,pick,get,collect
 drop:leave,put,discard
 go:move,walk,run,head
 look:inspect,examine,check,observe
+inventory:i,inv,bag,pockets
+use:utilize,apply,unlock
+talk:speak,chat,converse,greet
+give:offer,hand,pass

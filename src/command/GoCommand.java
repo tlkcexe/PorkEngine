@@ -6,9 +6,16 @@ import model.Room;
 import ui.ConsoleUI;
 import java.util.List;
 
+/**
+ * Command implementation for spatial navigation.
+ * Resolves directional input against the current room's valid exits,
+ * evaluating lock constraints before updating the player's location.
+ */
 public class GoCommand implements Command {
     @Override
-    public void execute(List<String> args, GameState gameState, ConsoleUI ui) {
+    public void execute(ParsedCommand command, GameState gameState, ConsoleUI ui) {
+        List<String> args = command.getArgs();
+        
         if (args.isEmpty()) {
             ui.printMessage("Go where? (e.g., 'go north')");
             return;
@@ -26,12 +33,15 @@ public class GoCommand implements Command {
                 String targetId = exit.getTargetRoomId();
                 ui.printMessage("You move " + direction + "...");
                 
-                // TODO: Εδώ χρειαζόμαστε από την ομάδα το εξής:
-                // Room nextRoom = gameState.getRoomById(targetId);
-                // gameState.getPlayer().setCurrentRoom(nextRoom);
-                // ui.printMessage(nextRoom.getDescription());
+                Room nextRoom = gameState.getRoomById(targetId);
                 
-                ui.printError("[SYSTEM] Need GameState.getRoomById() to complete movement to: " + targetId);
+                if (nextRoom != null) {
+                    gameState.getPlayer().setCurrentRoom(nextRoom);
+                    ui.printRoomHeader(nextRoom.getName());
+                    ui.printMessage(nextRoom.getDescription());
+                } else {
+                    ui.printError("[CRITICAL ERROR] Spatial link broken. Could not resolve room ID: " + targetId);
+                }
             }
         } else {
             ui.printMessage("You can't go that way.");
