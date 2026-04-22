@@ -1,11 +1,7 @@
-# Σχέδιο Ανάπτυξης Λογισμικού (Project Plan) & Αρχιτεκτονική Ανάλυση
-
-**Μάθημα:** Μεθοδολογία Προγραμματισμού
-
 **Ομάδα Ανάπτυξης:**
-1. Χατζηβασιλείου Αριστοτέλης ([@tlkcexe](https://github.com/tlkcexe))
-2. Βασιλειάδης Σωτήριος ([@Digbasanis](https://github.com/Digbasanis))
-3. Κοζάρης Αλέξανδρος ([@alkozaris](https://github.com/alkozaris))
+1. ([@tlkcexe](https://github.com/tlkcexe))
+2. ([@Digbasanis](https://github.com/Digbasanis))
+3. ([@alkozaris](https://github.com/alkozaris))
 
 ---
 
