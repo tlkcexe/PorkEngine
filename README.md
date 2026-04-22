@@ -14,165 +14,238 @@
 ```mermaid
 classDiagram
     %% ==========================================
-    %% 1. MODEL LAYER
+    %% MAIN & ENGINE CORE
     %% ==========================================
-    class Player {
-        +currentLocation : Room
-        +inventory : List~Item~
-    }
-    class Room {
-        +description : String
-        +exits : List~Exit~
-        +items : List~Item~
-        +npcs : List~NPC~
-    }
-    class Exit {
-        +targetRoom : Room
-        +isLocked : boolean
-    }
-    class Item {
-        +name : String
-        +description : String
-    }
-    class NPC {
-        +name : String
-        +stateMachine : NpcStateMachine
+    class Main {
+        +main(String[] args)$
     }
 
-    Player "1" --> "1" Room : currentLocation
-    Player "1" *-- "*" Item : has inventory
-    Room "1" *-- "*" Exit : has exits
-    Room "1" *-- "*" Item : has items
-    Room "1" *-- "*" NPC : has NPCs
-    Exit "*" --> "1" Room : leads to
-
-    %% ==========================================
-    %% 2. ENGINE CORE
-    %% ==========================================
     class GameEngine {
-        +mainLoop()
+        -GameState gameState
+        -ConsoleUI ui
+        -CommandDispatcher dispatcher
+        +GameEngine(GameState, ConsoleUI, CommandDispatcher)
+        +start()
+        -evaluateGameConditions()
     }
+
     class GameState {
-        +player : Player
-        +currentSessionData
+        -Player player
+        -boolean gameOver
+        -RoomRegistry roomRegistry
+        -Map~String, Boolean~ flags
+        +GameState(Player, RoomRegistry)
+        +getPlayer() Player
+        +isGameOver() boolean
+        +setGameOver(boolean)
+        +getRoomById(String) Room
+        +setFlag(String, boolean)
+        +getFlag(String) boolean
     }
+
+    class ConditionSystem {
+        +canUseItemOnTarget(Player, String, String) boolean
+    }
+
+    Main ..> GameEngine : creates
+    Main ..> GameState : initializes
+    GameEngine --> GameState : updates
+    ConditionSystem ..> Player : reads
+
+    %% ==========================================
+    %% UI LAYER
+    %% ==========================================
     class ConsoleUI {
-        +print(message)
-        +getInput() : String
+        -Scanner scanner
+        +printMessage(String)
+        +printError(String)
+        +printRoomHeader(String)
+        +getUserInput() String
     }
-
-    GameEngine --> GameState
-    GameEngine --> ConsoleUI
-    GameState --> Player
-
-    %% ==========================================
-    %% 3. GAME LOADER SYSTEM
-    %% ==========================================
-    class GameLoader {
-        <<interface>>
-        +loadGame()
-    }
-    class JsonGameLoader {
-        +parseJson()
-    }
-    class RoomRegistry {
-        +getRoom(id)
-    }
-    class ItemRegistry {
-        +getItem(id)
-    }
-
-    GameLoader <|.. JsonGameLoader
-    JsonGameLoader ..> RoomRegistry : populates
-    JsonGameLoader ..> ItemRegistry : populates
+    GameEngine --> ConsoleUI : outputs to
 
     %% ==========================================
-    %% 4. COMMAND SYSTEM
+    %% COMMAND SYSTEM (OCP / NLP)
     %% ==========================================
     class CommandDispatcher {
-        +dispatch(input)
+        <<interface>>
+        +dispatch(String, GameState, ConsoleUI)
     }
+
+    class CommandDispatcherImpl {
+        -CommandParser parser
+        -CommandRegistry registry
+        +dispatch(String, GameState, ConsoleUI)
+    }
+
     class CommandParser {
-        +tokenize()
+        -SynonymMap synonymMap
+        -List~String~ stopWords
+        -List~String~ prepositions
+        +tokenize(String) ParsedCommand
     }
+
     class SynonymMap {
-        +getPrimaryVerb()
+        -Map~String, String~ synonymMap
+        -loadFromFile(String)
+        +getPrimaryVerb(String) String
     }
+
     class CommandRegistry {
-        +getCommand(verb)
+        -Map~String, Command~ commands
+        +register(String, Command)
+        +getCommand(String) Command
     }
+
+    class ParsedCommand {
+        <<Data Transfer Object>>
+        -String verb
+        -List~String~ args
+        -String preposition
+        -List~String~ secondaryArgs
+        +getFirstArg() String
+        +getSecondArg() String
+    }
+
     class Command {
         <<interface>>
-        +execute(args, gameState)
+        +execute(ParsedCommand, GameState, ConsoleUI)
     }
-    
-    %% Διακριτές Εντολές βάσει χρονοδιαγράμματος
+
+    CommandDispatcher <|.. CommandDispatcherImpl
+    CommandDispatcherImpl --> CommandParser
+    CommandDispatcherImpl --> CommandRegistry
+    CommandParser --> SynonymMap
+    CommandParser ..> ParsedCommand : creates
+    CommandRegistry *-- "*" Command : maps verb to
+    GameEngine --> CommandDispatcher : delegates input
+
+    %% Concrete Commands
     class GoCommand
     class TakeCommand
     class DropCommand
     class LookCommand
-    class MultiObjectCommand
+    class InventoryCommand
     class UseCommand
-    class InspectCommand
-    class CombineCommand
     class TalkCommand
     class GiveCommand
-
-    CommandDispatcher --> CommandParser
-    CommandDispatcher --> CommandRegistry
-    CommandParser --> SynonymMap
-    CommandRegistry *-- "*" Command : maps verbs to
 
     Command <|.. GoCommand
     Command <|.. TakeCommand
     Command <|.. DropCommand
     Command <|.. LookCommand
-    Command <|.. MultiObjectCommand
+    Command <|.. InventoryCommand
     Command <|.. UseCommand
-    Command <|.. InspectCommand
-    Command <|.. CombineCommand
     Command <|.. TalkCommand
     Command <|.. GiveCommand
 
-    GameEngine --> CommandDispatcher
-
     %% ==========================================
-    %% 5. EVENT & CONDITION SYSTEM
+    %% LOADER SYSTEM (Data-Driven)
     %% ==========================================
-    class ConditionSystem {
-        +checkRequirements()
-    }
-    class EventSystem {
-        +triggerEvent()
-    }
-    class GameFlags {
-        +winCondition : boolean
-        +loseCondition : boolean
+    class GameLoader {
+        <<interface>>
+        +loadGame(String) Room
     }
 
-    ConditionSystem ..> GameState : reads
-    EventSystem --> GameFlags : updates
-    Command ..> ConditionSystem : checks
-    Command ..> EventSystem : triggers
-
-    %% ==========================================
-    %% 6. NPC SYSTEM (BONUS)
-    %% ==========================================
-    class NpcStateMachine {
-        +currentState
-        +transition()
-    }
-    class NpcRegistry {
-        +getNpc(id)
-    }
-    class NpcStagingManager {
-        +updateNpcLocations()
+    class JsonGameLoader {
+        -RoomRegistry roomRegistry
+        -String startingRoomId
+        +loadGame(String) Room
     }
 
-    NPC "1" *-- "1" NpcStateMachine
-    NpcRegistry *-- "*" NPC
-    NpcStagingManager ..> NpcRegistry
-    JsonGameLoader ..> NpcRegistry : populates
+    class StubGameLoader {
+        +loadGame(String) Room
+    }
+
+    class RoomRegistry {
+        -Map~String, Room~ rooms
+        +addRoom(Room)
+        +getRoom(String) Room
+    }
+
+    class GameDataDTO {
+        <<Data Transfer Object>>
+        +String gameName
+        +String startingRoom
+        +List~RoomDTO~ rooms
+    }
+
+    GameLoader <|.. JsonGameLoader
+    GameLoader <|.. StubGameLoader
+    JsonGameLoader ..> RoomRegistry : populates
+    JsonGameLoader ..> GameDataDTO : deserializes JSON
+    Main ..> JsonGameLoader : uses
+
+    %% ==========================================
+    %% MODEL LAYER (Entities & State)
+    %% ==========================================
+    class Player {
+        <<interface>>
+        +getCurrentRoom() Room
+        +setCurrentRoom(Room)
+        +getInventory() List~Item~
+        +addItem(Item)
+        +removeItem(Item)
+        +hasItem(String) boolean
+    }
+    class PlayerImpl
+
+    class Room {
+        <<interface>>
+        +getId() String
+        +getName() String
+        +getDescription() String
+        +getItems() List~Item~
+        +getExits() List~Exit~
+        +getItemByName(String) Item
+        +getExitByDirection(String) Exit
+        +addNpc(Npc)
+        +getNpcByName(String) Npc
+    }
+    class RoomImpl
+
+    class Exit {
+        <<interface>>
+        +getDirection() String
+        +getTargetRoomId() String
+        +isLocked() boolean
+        +setLocked(boolean)
+        +getRequiredItemId() String
+    }
+    class ExitImpl
+
+    class Item {
+        <<interface>>
+        +getName() String
+        +getDescription() String
+    }
+    class ItemImpl
+
+    class Npc {
+        <<interface>>
+        +getId() String
+        +getName() String
+        +getDescription() String
+        +getCurrentState() String
+        +setCurrentState(String)
+        +talk() String
+        +addDialog(String, String)
+        +getRequiredItemId() String
+    }
+    class NpcImpl
+
+    Player <|.. PlayerImpl
+    Room <|.. RoomImpl
+    Exit <|.. ExitImpl
+    Item <|.. ItemImpl
+    Npc <|.. NpcImpl
+
+    PlayerImpl "1" --> "1" Room : currentRoom
+    PlayerImpl "1" *-- "*" Item : inventory
+    RoomImpl "1" *-- "*" Exit : exits
+    RoomImpl "1" *-- "*" Item : items
+    RoomImpl "1" *-- "*" Npc : npcs
+    GameState --> Player : manages
 ```
 
 ## 1. Ποιες είναι οι απαιτήσεις του project
