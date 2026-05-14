@@ -1,0 +1,95 @@
+{
+  "gameName": "John Pork: The Final Call",
+  "startingRoom": "bedroom",
+  "rooms": [
+    {
+      "id": "bedroom",
+      "name": "Messy Bedroom",
+      "description": "You wake up in a modern but messy bedroom. You hear a faint ringing sound coming from somewhere in the apartment. The living room is to the east.",
+      "exits": [
+        {
+          "direction": "east",
+          "targetRoom": "penthouse",
+          "isLocked": false
+        }
+      ]
+    },
+    {
+      "id": "penthouse",
+      "name": "Luxury Penthouse",
+      "description": "A huge living room with a breathtaking city view. The kitchen is to the south, and your bedroom is west. The balcony door to the north is magically sealed.",
+      "exits": [
+        {
+          "direction": "west",
+          "targetRoom": "bedroom",
+          "isLocked": false
+        },
+        {
+          "direction": "south",
+          "targetRoom": "kitchen",
+          "isLocked": false
+        },
+        {
+          "direction": "north",
+          "targetRoom": "balcony",
+          "isLocked": true,
+          "requiredItem": "magic_vibe"
+        }
+      ],
+      "npcs": [
+        {
+          "id": "john_pork_spirit",
+          "name": "spirit",
+          "description": "A floating digital head of John Pork. He looks annoyed that you haven't answered his call.",
+          "startingState": "calling",
+          "requiredItem": "phone",
+          "dialogs": {
+            "calling": "Ringtone intensifies... *I just called to say...*",
+            "happy": "You finally answered! The vibe is now immaculate. The balcony door is open."
+          }
+        }
+      ]
+    },
+    {
+      "id": "kitchen",
+      "name": "Modern Kitchen",
+      "description": "A sleek kitchen with marble counters. The ringing sound is deafening here. The penthouse is back to the north.",
+      "items": [
+        {
+          "id": "smartphone",
+          "name": "phone",
+          "description": "The screen glows brightly. It says: 'JOHN PORK IS CALLING...'"
+        }
+      ],
+      "exits": [
+        {
+          "direction": "north",
+          "targetRoom": "penthouse",
+          "isLocked": false
+        }
+      ]
+    },
+    {
+      "id": "balcony",
+      "name": "The Skyline Balcony",
+      "description": "You step out onto the glass balcony. The view is legendary. You feel an urge to look up at the sky. The penthouse is south.",
+      "exits": [
+        {
+          "direction": "south",
+          "targetRoom": "penthouse",
+          "isLocked": false
+        },
+        {
+          "direction": "up",
+          "targetRoom": "outside",
+          "isLocked": false
+        }
+      ]
+    },
+    {
+      "id": "outside",
+      "name": "Meme Heaven",
+      "description": "You ascend to the clouds. John Pork nods at you in approval. You have achieved peak Vibe and won the game!"
+    }
+  ]
+}

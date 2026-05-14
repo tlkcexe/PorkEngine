@@ -1,27 +1,28 @@
 package command;
 
 import engine.GameState;
+import model.Item;
 import model.Room;
 import ui.ConsoleUI;
-import java.util.List;
 
+/**
+ * Command implementation for environmental observation.
+ * Outputs the current room's narrative description and dynamically lists
+ * all visible, interactable items currently located in the same spatial node.
+ */
 public class LookCommand implements Command {
     @Override
-    public void execute(List<String> args, GameState gameState, ConsoleUI ui) {
+    public void execute(ParsedCommand command, GameState gameState, ConsoleUI ui) {
         Room currentRoom = gameState.getPlayer().getCurrentRoom();
         
-        ui.printMessage("--- " + currentRoom.getName() + " ---");
+        ui.printRoomHeader(currentRoom.getName());
         ui.printMessage(currentRoom.getDescription());
         
         if (currentRoom.getItems() != null && !currentRoom.getItems().isEmpty()) {
-            StringBuilder itemsStr = new StringBuilder("You see the following items here: ");
-            for (int i = 0; i < currentRoom.getItems().size(); i++) {
-                itemsStr.append(currentRoom.getItems().get(i).getName());
-                if (i < currentRoom.getItems().size() - 1) {
-                    itemsStr.append(", ");
-                }
+            ui.printMessage("\nVisible items:");
+            for (Item item : currentRoom.getItems()) {
+                ui.printMessage("  ~ " + item.getName());
             }
-            ui.printMessage(itemsStr.toString());
         }
     }
 }

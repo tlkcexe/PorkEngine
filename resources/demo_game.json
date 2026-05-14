@@ -1,58 +1,102 @@
 {
-  "gameName": "Dungeon Escape: The Awakened",
-  "startingRoom": "room_cell",
+  "gameName": "Dungeon Escape: The Awakening",
+  "startingRoom": "dank_cell",
   "rooms": [
     {
-      "id": "room_cell",
+      "id": "dank_cell",
       "name": "Dank Cell",
-      "description": "You awaken in a cold, damp cell. The stone walls are covered in moss, and the air smells of decay. A heavy iron door stands to the north.",
-      "items": [],
+      "description": "You awaken in a cold, damp cell. The stone walls are covered in moss. There is a rusty door to the north.",
       "exits": [
-        { "direction": "north", "targetRoom": "room_corridor", "isLocked": false }
+        {
+          "direction": "north",
+          "targetRoom": "hallway",
+          "isLocked": false
+        }
       ]
     },
     {
-      "id": "room_corridor",
-      "name": "Shadowy Corridor",
-      "description": "A long corridor lit by flickering torches. To the south is your cell. To the west, you hear the faint sound of dripping water. To the east, a heavy wooden door. To the north, a massive gate blocks the exit.",
-      "items": [],
+      "id": "hallway",
+      "name": "Dark Hallway",
+      "description": "A dimly lit hallway. To the east is a Storage Room, and to the west is an Armory. The main exit is to the north, but a hefty Guard is blocking the way.",
       "exits": [
-        { "direction": "south", "targetRoom": "room_cell", "isLocked": false },
-        { "direction": "west", "targetRoom": "room_storage", "isLocked": false },
-        { "direction": "east", "targetRoom": "room_guardroom", "isLocked": false },
-        { "direction": "north", "targetRoom": "room_exit", "isLocked": true }
+        {
+          "direction": "south",
+          "targetRoom": "dank_cell",
+          "isLocked": false
+        },
+        {
+          "direction": "east",
+          "targetRoom": "storage_room",
+          "isLocked": false
+        },
+        {
+          "direction": "west",
+          "targetRoom": "armory",
+          "isLocked": false
+        },
+        {
+          "direction": "north",
+          "targetRoom": "outside",
+          "isLocked": true,
+          "requiredItem": "freedom_pass"
+        }
+      ],
+      "npcs": [
+        {
+          "id": "guard_01",
+          "name": "guard",
+          "description": "A tall, mean-looking guard holding a spear. He won't let you pass without a bribe.",
+          "startingState": "angry",
+          "requiredItem": "coin",
+          "dialogs": {
+            "angry": "Halt! Nobody passes this door without paying the toll of one gold coin!",
+            "happy": "Thanks for the coin! I unlocked the door for you. Move along."
+          }
+        }
       ]
     },
     {
-      "id": "room_storage",
-      "name": "Forgotten Storage",
-      "description": "A dusty storage room filled with broken crates and old barrels. It looks like it hasn't been used in years. The only way out is back east.",
+      "id": "storage_room",
+      "name": "Storage Room",
+      "description": "A dusty room filled with broken barrels and cobwebs. Something shiny catches your eye in the corner. The hallway is back to the west.",
       "items": [
-        { "id": "item_torch", "name": "torch", "description": "A sturdy wooden torch wrapped in oil-soaked cloth. It could provide light or a desperate weapon." }
+        {
+          "id": "coin",
+          "name": "coin",
+          "description": "A shiny gold coin. This could be useful for a bribe."
+        }
       ],
       "exits": [
-        { "direction": "east", "targetRoom": "room_corridor", "isLocked": false }
+        {
+          "direction": "west",
+          "targetRoom": "hallway",
+          "isLocked": false
+        }
       ]
     },
     {
-      "id": "room_guardroom",
-      "name": "Guard's Quarters",
-      "description": "A small room that serves as a resting place for guards. There is a simple cot and a table scattered with playing cards. The corridor is to the west.",
+      "id": "armory",
+      "name": "Abandoned Armory",
+      "description": "Old weapon racks line the walls, mostly empty. The only way out is east back to the hallway.",
       "items": [
-        { "id": "item_key", "name": "key", "description": "A heavy, rusted iron key. It looks important enough to open the main gate." }
+        {
+          "id": "sword",
+          "name": "sword",
+          "description": "A rusty iron sword. It's dull, but better than nothing."
+        }
       ],
       "exits": [
-        { "direction": "west", "targetRoom": "room_corridor", "isLocked": false }
+        {
+          "direction": "east",
+          "targetRoom": "hallway",
+          "isLocked": false
+        }
       ]
     },
     {
-      "id": "room_exit",
-      "name": "The Outside",
-      "description": "The cool night air hits your face. You have escaped the dungeon. Freedom is finally yours.",
-      "items": [],
-      "exits": [
-        { "direction": "south", "targetRoom": "room_corridor", "isLocked": false }
-      ]
+      "id": "outside",
+      "name": "Freedom",
+      "description": "You step outside and breathe the fresh air! The sun is shining. You have escaped!"
     }
   ]
 }

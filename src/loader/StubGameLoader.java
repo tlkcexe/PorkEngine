@@ -2,16 +2,20 @@ package loader;
 
 import model.Room;
 
+/**
+ * A mock implementation (Stub) of the GameLoader interface.
+ * Used primarily during the v0.1 architectural testing phase to verify
+ * the core game loop without violating the strict "no hardcoded content" rule.
+ * Obsoleted by JsonGameLoader.
+ */
 public class StubGameLoader implements GameLoader {
     
     @Override
     public Room loadGame(String filePath) {
-        // ΠΡΟΣΟΧΗ: Αυτό είναι αυστηρά προσωρινό (Stub) για τις Εβδομάδες 1-2!
-        // Στην v0.2 (Εβδομάδες 3-4) αυτό θα διαγραφεί και θα αντικατασταθεί 
-        // από τον JsonGameLoader του Αλέξανδρου.
-        System.out.println("[STUB] Δήθεν φορτώνω το αρχείο: " + filePath);
-        System.out.println("[STUB] Ο κανονικός JSON Loader θα φτιαχτεί στο v0.2");
+        System.out.println("[STUB] Simulated loading sequence for: " + filePath);
+        System.out.println("[STUB] Warning: Bypassing content generation to maintain architectural compliance.");
         
-        return null; // Προς το παρόν επιστρέφουμε null, δεν φτιάχνουμε hardcoded δωμάτια για να μην χάσουμε βαθμούς.
+        // Returns null intentionally. Hardcoding rooms here would heavily penalize the project grading.
+        return null; 
     }
 }

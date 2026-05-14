@@ -1,11 +1,37 @@
 package model;
 
+/**
+ * Represents a navigable transition between two rooms.
+ * Defines the contract for spatial connections, including conditional access mechanisms (locks).
+ */
 public interface Exit {
-    String getDirection();      // Η κατεύθυνση της εξόδου (π.χ. "north", "east")
-    String getTargetRoomId();   // Το ID του δωματίου στο οποίο οδηγεί (π.χ. "room_hallway")
+    /**
+     * Gets the directional command required to trigger this exit (e.g., "north", "up").
+     * @return The direction string.
+     */
+    String getDirection();      
 
-    // Μηχανισμός για κλειδωμένες πόρτες (προετοιμασία για τις Εβδομάδες 5-6)
+    /**
+     * Gets the unique identifier of the destination room.
+     * @return The target room's ID.
+     */
+    String getTargetRoomId();   
+
+    /**
+     * Checks if the exit is currently locked and requires a specific prerequisite to traverse.
+     * @return True if the exit is locked, false otherwise.
+     */
     boolean isLocked();
+
+    /**
+     * Modifies the access state of the exit.
+     * @param locked The new lock state.
+     */
     void setLocked(boolean locked);
-    String getRequiredItemId(); // Το ID του αντικειμένου που χρειάζεται για να ξεκλειδώσει (π.χ. "gold_key")
+
+    /**
+     * Retrieves the identifier of the item required to unlock this exit.
+     * @return The required item's ID, or null if no item is required.
+     */
+    String getRequiredItemId(); 
 }
