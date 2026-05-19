@@ -13,166 +13,275 @@
 
 ```mermaid
 classDiagram
-    %% ==========================================
-    %% 1. MODEL LAYER
-    %% ==========================================
-    class Player {
-        +currentLocation : Room
-        +inventory : List~Item~
-    }
-    class Room {
-        +description : String
-        +exits : List~Exit~
-        +items : List~Item~
-        +npcs : List~NPC~
-    }
-    class Exit {
-        +targetRoom : Room
-        +isLocked : boolean
-    }
-    class Item {
-        +name : String
-        +description : String
-    }
-    class NPC {
-        +name : String
-        +stateMachine : NpcStateMachine
-    }
-
-    Player "1" --> "1" Room : currentLocation
-    Player "1" *-- "*" Item : has inventory
-    Room "1" *-- "*" Exit : has exits
-    Room "1" *-- "*" Item : has items
-    Room "1" *-- "*" NPC : has NPCs
-    Exit "*" --> "1" Room : leads to
+    direction TB
 
     %% ==========================================
-    %% 2. ENGINE CORE
+    %% 1. CORE & UI
     %% ==========================================
-    class GameEngine {
-        +mainLoop()
-    }
-    class GameState {
-        +player : Player
-        +currentSessionData
-    }
-    class ConsoleUI {
-        +print(message)
-        +getInput() : String
+    namespace 1_Core_And_UI {
+        class Main {
+            +main(args: String[])
+        }
+        class ConsoleUI {
+            -scanner: Scanner
+            +printMessage(message: String)
+            +printError(error: String)
+            +printRoomHeader(roomName: String)
+            +getUserInput() String
+        }
     }
 
-    GameEngine --> GameState
-    GameEngine --> ConsoleUI
-    GameState --> Player
+    %% ==========================================
+    %% 2. ENGINE
+    %% ==========================================
+    namespace 2_Game_Engine {
+        class GameEngine {
+            -gameState: GameState
+            -ui: ConsoleUI
+            -dispatcher: CommandDispatcher
+            +start()
+            -evaluateGameConditions()
+        }
+        class GameState {
+            -player: Player
+            -gameOver: boolean
+            -roomRegistry: RoomRegistry
+            -flags: Map~String, Boolean~
+            -commandHistory: List~String~
+            -difficultyLevel: String
+            -currentGoal: String
+            +getRoomById(id: String) Room
+            +setFlag(flagName: String, value: boolean)
+            +getFlag(flagName: String) boolean
+        }
+        class ConditionSystem {
+            +canUseItemOnTarget(player: Player, itemName: String, targetName: String) boolean
+        }
+    }
 
     %% ==========================================
-    %% 3. GAME LOADER SYSTEM
+    %% 3. COMMAND SYSTEM
     %% ==========================================
-    class GameLoader {
-        <<interface>>
-        +loadGame()
-    }
-    class JsonGameLoader {
-        +parseJson()
-    }
-    class RoomRegistry {
-        +getRoom(id)
-    }
-    class ItemRegistry {
-        +getItem(id)
+    namespace 3_Command_System {
+        class CommandDispatcher {
+            <<interface>>
+            +dispatch(input: String, gameState: GameState, ui: ConsoleUI)
+        }
+        class CommandDispatcherImpl {
+            -parser: CommandParser
+            -registry: CommandRegistry
+            +dispatch(input: String, gameState: GameState, ui: ConsoleUI)
+        }
+        class CommandParser {
+            -synonymMap: SynonymMap
+            -stopWords: List~String~
+            -prepositions: List~String~
+            +tokenize(input: String) ParsedCommand
+        }
+        class ParsedCommand {
+            -verb: String
+            -args: List~String~
+            -preposition: String
+            -secondaryArgs: List~String~
+            +getVerb() String
+            +getArgs() List~String~
+        }
+        class SynonymMap {
+            -synonymMap: Map~String, String~
+            +loadFromFile(filePath: String)
+            +getPrimaryVerb(word: String) String
+        }
+        class CommandRegistry {
+            -commands: Map~String, Command~
+            +register(verb: String, command: Command)
+            +getCommand(verb: String) Command
+        }
+        class Command {
+            <<interface>>
+            +execute(command: ParsedCommand, gameState: GameState, ui: ConsoleUI)
+        }
     }
 
-    GameLoader <|.. JsonGameLoader
-    JsonGameLoader ..> RoomRegistry : populates
-    JsonGameLoader ..> ItemRegistry : populates
+    %% ==========================================
+    %% 4. CONCRETE COMMANDS
+    %% ==========================================
+    namespace 4_Concrete_Commands {
+        class GoCommand
+        class LookCommand
+        class TakeCommand
+        class DropCommand
+        class InventoryCommand
+        class TalkCommand
+        class GiveCommand
+        class UseCommand
+        class SaveCommand
+        class LoadCommand
+        class QuitCommand
+        class HistoryCommand
+        class StateCommand
+        class DifficultyCommand
+    }
 
     %% ==========================================
-    %% 4. COMMAND SYSTEM
+    %% 5. DOMAIN MODEL
     %% ==========================================
-    class CommandDispatcher {
-        +dispatch(input)
+    namespace 5_Domain_Model {
+        class Room {
+            <<interface>>
+            +getId() String
+            +getName() String
+            +getDescription() String
+            +getItems() List~Item~
+            +getExits() List~Exit~
+            +addNpc(npc: Npc)
+        }
+        class RoomImpl {
+            -id: String
+            -name: String
+            -description: String
+            -items: List~Item~
+            -exits: List~Exit~
+            -npcs: List~Npc~
+        }
+        class Player {
+            <<interface>>
+            +getCurrentRoom() Room
+            +setCurrentRoom(room: Room)
+            +getInventory() List~Item~
+            +addItem(item: Item)
+            +hasItem(itemName: String) boolean
+        }
+        class PlayerImpl {
+            -currentRoom: Room
+            -inventory: List~Item~
+        }
+        class Item {
+            <<interface>>
+            +getName() String
+            +getDescription() String
+        }
+        class ItemImpl {
+            -name: String
+            -description: String
+        }
+        class Exit {
+            <<interface>>
+            +getDirection() String
+            +getTargetRoomId() String
+            +isLocked() boolean
+            +getRequiredItemId() String
+        }
+        class ExitImpl {
+            -direction: String
+            -targetRoomId: String
+            -isLocked: boolean
+            -requiredItemId: String
+        }
+        class Npc {
+            <<interface>>
+            +getId() String
+            +getName() String
+            +getCurrentState() String
+            +talk() String
+            +getRequiredItemId() String
+        }
+        class NpcImpl {
+            -id: String
+            -name: String
+            -currentState: String
+            -requiredItemId: String
+            -dialogs: Map~String, String~
+        }
     }
-    class CommandParser {
-        +tokenize()
+
+    %% ==========================================
+    %% 6. DATA LOADER
+    %% ==========================================
+    namespace 6_Data_Loader {
+        class GameLoader {
+            <<interface>>
+            +loadGame(filePath: String) Room
+        }
+        class JsonGameLoader {
+            -roomRegistry: RoomRegistry
+            -startingRoomId: String
+            +loadGame(filePath: String) Room
+        }
+        class StubGameLoader {
+            +loadGame(filePath: String) Room
+        }
+        class RoomRegistry {
+            -rooms: Map~String, Room~
+            +addRoom(room: Room)
+            +getRoom(id: String) Room
+        }
+        class GameDataDTO {
+            +gameName: String
+            +startingRoom: String
+            +rooms: List~RoomDTO~
+        }
     }
-    class SynonymMap {
-        +getPrimaryVerb()
-    }
-    class CommandRegistry {
-        +getCommand(verb)
-    }
-    class Command {
-        <<interface>>
-        +execute(args, gameState)
-    }
+
+    %% ==========================================
+    %% ΣΥΝΔΕΣΕΙΣ
+    %% ==========================================
     
-    %% Διακριτές Εντολές βάσει χρονοδιαγράμματος
-    class GoCommand
-    class TakeCommand
-    class DropCommand
-    class LookCommand
-    class MultiObjectCommand
-    class UseCommand
-    class InspectCommand
-    class CombineCommand
-    class TalkCommand
-    class GiveCommand
+    %% Engine Dependencies
+    GameEngine o-- GameState : uses
+    GameEngine o-- ConsoleUI : uses
+    GameEngine o-- CommandDispatcher : uses
+    GameState o-- Player : tracks
+    GameState o-- RoomRegistry : references
 
-    CommandDispatcher --> CommandParser
-    CommandDispatcher --> CommandRegistry
-    CommandParser --> SynonymMap
-    CommandRegistry *-- "*" Command : maps verbs to
+    %% System Dependencies
+    CommandDispatcher <|.. CommandDispatcherImpl
+    CommandDispatcherImpl o-- CommandParser
+    CommandDispatcherImpl o-- CommandRegistry
+    CommandParser o-- SynonymMap
+    CommandParser ..> ParsedCommand : produces
+    CommandRegistry *-- Command : maps
 
+    %% Concrete Commands Realization
     Command <|.. GoCommand
+    Command <|.. LookCommand
     Command <|.. TakeCommand
     Command <|.. DropCommand
-    Command <|.. LookCommand
-    Command <|.. MultiObjectCommand
-    Command <|.. UseCommand
-    Command <|.. InspectCommand
-    Command <|.. CombineCommand
+    Command <|.. InventoryCommand
     Command <|.. TalkCommand
     Command <|.. GiveCommand
+    Command <|.. UseCommand
+    Command <|.. SaveCommand
+    Command <|.. LoadCommand
+    Command <|.. QuitCommand
+    Command <|.. HistoryCommand
+    Command <|.. StateCommand
+    Command <|.. DifficultyCommand
 
-    GameEngine --> CommandDispatcher
+    %% Domain Dependencies
+    Room <|.. RoomImpl
+    Player <|.. PlayerImpl
+    Item <|.. ItemImpl
+    Exit <|.. ExitImpl
+    Npc <|.. NpcImpl
+    RoomImpl *-- Item : contains
+    RoomImpl *-- Exit : contains
+    RoomImpl *-- Npc : contains
+    PlayerImpl --> Room : located in
+    PlayerImpl *-- Item : holds
 
-    %% ==========================================
-    %% 5. EVENT & CONDITION SYSTEM
-    %% ==========================================
-    class ConditionSystem {
-        +checkRequirements()
-    }
-    class EventSystem {
-        +triggerEvent()
-    }
-    class GameFlags {
-        +winCondition : boolean
-        +loseCondition : boolean
-    }
+    %% Loader Dependencies
+    GameLoader <|.. JsonGameLoader
+    GameLoader <|.. StubGameLoader
+    JsonGameLoader --> RoomRegistry : populates
+    JsonGameLoader ..> GameDataDTO : deserializes
 
-    ConditionSystem ..> GameState : reads
-    EventSystem --> GameFlags : updates
-    Command ..> ConditionSystem : checks
-    Command ..> EventSystem : triggers
-
-    %% ==========================================
-    %% 6. NPC SYSTEM (BONUS)
-    %% ==========================================
-    class NpcStateMachine {
-        +currentState
-        +transition()
-    }
-    class NpcRegistry {
-        +getNpc(id)
-    }
-    class NpcStagingManager {
-        +updateNpcLocations()
-    }
-
-    NPC "1" *-- "1" NpcStateMachine
-    NpcRegistry *-- "*" NPC
-    NpcStagingManager ..> NpcRegistry
-    JsonGameLoader ..> NpcRegistry : populates
+    %% Main Dependencies
+    Main ..> ConsoleUI : init
+    Main ..> JsonGameLoader : init
+    Main ..> PlayerImpl : init
+    Main ..> GameState : init
+    Main ..> CommandDispatcherImpl : init
+    Main ..> GameEngine : init
 ```
 
 ## 1. Ποιες είναι οι απαιτήσεις του project
