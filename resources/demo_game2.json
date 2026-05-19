@@ -1,95 +1,231 @@
 {
-  "gameName": "John Pork: The Final Call",
-  "startingRoom": "bedroom",
+  "gameName": "Cold Horizon Station",
+  "startingRoom": "landing_pad",
   "rooms": [
     {
-      "id": "bedroom",
-      "name": "Messy Bedroom",
-      "description": "You wake up in a modern but messy bedroom. You hear a faint ringing sound coming from somewhere in the apartment. The living room is to the east.",
+      "id": "landing_pad",
+      "name": "Landing Pad",
+      "description": "An icy platform buffeted by Arctic winds. Your shuttle hums behind you. The Decontamination Chamber lies to the north.",
+      "exits": [
+        {
+          "direction": "north",
+          "targetRoom": "decon_chamber",
+          "isLocked": false
+        }
+      ]
+    },
+    {
+      "id": "decon_chamber",
+      "name": "Decontamination Chamber",
+      "description": "High-pressure jets spray a sanitizing mist as you enter. The facility's Main Hub is further north.",
+      "exits": [
+        {
+          "direction": "south",
+          "targetRoom": "landing_pad",
+          "isLocked": false
+        },
+        {
+          "direction": "north",
+          "targetRoom": "main_hub",
+          "isLocked": false
+        }
+      ]
+    },
+    {
+      "id": "main_hub",
+      "name": "Main Hub",
+      "description": "The central circular hall of the station. Corridors lead to Biology (West), Engineering (East), and the Command Center (North). A maintenance drone is hovering nearby.",
+      "npcs": [
+        {
+          "id": "drone_01",
+          "name": "Drone",
+          "description": "A floating spherical robot with a blinking blue light.",
+          "dialogs": {
+            "idle": "Beep. Hub status: Nominal. Access to the Command Center requires Alpha Clearance.",
+            "happy": "Alpha Clearance confirmed. Unlocking Command Center bulkheads."
+          },
+          "startingState": "idle"
+        }
+      ],
+      "exits": [
+        {
+          "direction": "south",
+          "targetRoom": "decon_chamber",
+          "isLocked": false
+        },
+        {
+          "direction": "west",
+          "targetRoom": "biology_lab",
+          "isLocked": false
+        },
+        {
+          "direction": "east",
+          "targetRoom": "engineering",
+          "isLocked": false
+        },
+        {
+          "direction": "north",
+          "targetRoom": "outside",
+          "isLocked": true,
+          "requiredItem": "card"
+        }
+      ]
+    },
+    {
+      "id": "biology_lab",
+      "name": "Biology Lab",
+      "description": "Filled with microscopes and sealed canisters. To the south is the Greenhouse.",
+      "npcs": [
+        {
+          "id": "scientist_01",
+          "name": "Scientist",
+          "description": "Dr. Aris, looking exhausted behind safety goggles.",
+          "requiredItem": "container",
+          "dialogs": {
+            "neutral": "I need my sample container from the storage room to finish this analysis.",
+            "happy": "Perfect! This sample will change everything."
+          },
+          "startingState": "neutral"
+        }
+      ],
       "exits": [
         {
           "direction": "east",
-          "targetRoom": "penthouse",
+          "targetRoom": "main_hub",
+          "isLocked": false
+        },
+        {
+          "direction": "south",
+          "targetRoom": "greenhouse",
           "isLocked": false
         }
       ]
     },
     {
-      "id": "penthouse",
-      "name": "Luxury Penthouse",
-      "description": "A huge living room with a breathtaking city view. The kitchen is to the south, and your bedroom is west. The balcony door to the north is magically sealed.",
+      "id": "greenhouse",
+      "name": "Greenhouse",
+      "description": "A humid room with artificial sunlight feeding rows of exotic plants. An Observation Deck is to the west.",
+      "items": [
+        {
+          "id": "card",
+          "name": "card",
+          "description": "An Alpha Clearance security card found near a planter."
+        }
+      ],
+      "exits": [
+        {
+          "direction": "north",
+          "targetRoom": "biology_lab",
+          "isLocked": false
+        },
+        {
+          "direction": "west",
+          "targetRoom": "observation_deck",
+          "isLocked": false
+        }
+      ]
+    },
+    {
+      "id": "engineering",
+      "name": "Engineering Bay",
+      "description": "Dominated by the massive fusion reactor. Corridors lead south to Living Quarters.",
+      "npcs": [
+        {
+          "id": "engineer_01",
+          "name": "Engineer",
+          "description": "A man covered in grease, holding a heavy wrench.",
+          "requiredItem": "toolkit",
+          "dialogs": {
+            "busy": "The reactor's acting up. If only I had my specialized toolkit from the storage room.",
+            "happy": "Reactor stabilized. You're a life-saver."
+          },
+          "startingState": "busy"
+        }
+      ],
       "exits": [
         {
           "direction": "west",
-          "targetRoom": "bedroom",
+          "targetRoom": "main_hub",
           "isLocked": false
         },
         {
           "direction": "south",
-          "targetRoom": "kitchen",
+          "targetRoom": "living_quarters",
           "isLocked": false
-        },
-        {
-          "direction": "north",
-          "targetRoom": "balcony",
-          "isLocked": true,
-          "requiredItem": "magic_vibe"
-        }
-      ],
-      "npcs": [
-        {
-          "id": "john_pork_spirit",
-          "name": "spirit",
-          "description": "A floating digital head of John Pork. He looks annoyed that you haven't answered his call.",
-          "startingState": "calling",
-          "requiredItem": "phone",
-          "dialogs": {
-            "calling": "Ringtone intensifies... *I just called to say...*",
-            "happy": "You finally answered! The vibe is now immaculate. The balcony door is open."
-          }
         }
       ]
     },
     {
-      "id": "kitchen",
-      "name": "Modern Kitchen",
-      "description": "A sleek kitchen with marble counters. The ringing sound is deafening here. The penthouse is back to the north.",
+      "id": "living_quarters",
+      "name": "Living Quarters",
+      "description": "A row of small, functional bunks. The Storage Room is to the east.",
+      "exits": [
+        {
+          "direction": "north",
+          "targetRoom": "engineering",
+          "isLocked": false
+        },
+        {
+          "direction": "east",
+          "targetRoom": "storage_room",
+          "isLocked": false
+        }
+      ]
+    },
+    {
+      "id": "storage_room",
+      "name": "Storage Room",
+      "description": "A large hangar filled with crates. You see tools and containers scattered around.",
       "items": [
         {
-          "id": "smartphone",
-          "name": "phone",
-          "description": "The screen glows brightly. It says: 'JOHN PORK IS CALLING...'"
+          "id": "toolkit",
+          "name": "toolkit",
+          "description": "A heavy box of specialized engineering tools."
+        },
+        {
+          "id": "container",
+          "name": "container",
+          "description": "A reinforced lead-lined sample container."
         }
       ],
       "exits": [
         {
-          "direction": "north",
-          "targetRoom": "penthouse",
+          "direction": "west",
+          "targetRoom": "living_quarters",
           "isLocked": false
         }
       ]
     },
     {
-      "id": "balcony",
-      "name": "The Skyline Balcony",
-      "description": "You step out onto the glass balcony. The view is legendary. You feel an urge to look up at the sky. The penthouse is south.",
+      "id": "observation_deck",
+      "name": "Observation Deck",
+      "description": "A wall of reinforced glass offers a view of the aurora borealis. It is breathtaking.",
       "exits": [
         {
-          "direction": "south",
-          "targetRoom": "penthouse",
-          "isLocked": false
-        },
-        {
-          "direction": "up",
-          "targetRoom": "outside",
+          "direction": "east",
+          "targetRoom": "greenhouse",
           "isLocked": false
         }
       ]
     },
     {
       "id": "outside",
-      "name": "Meme Heaven",
-      "description": "You ascend to the clouds. John Pork nods at you in approval. You have achieved peak Vibe and won the game!"
+      "name": "Command Center",
+      "description": "The brain of the station. Banks of computers monitor everything. You have reached your destination and secured the facility!",
+      "items": [
+        {
+          "id": "logbook",
+          "name": "logbook",
+          "description": "The final mission logs of the station."
+        }
+      ],
+      "exits": [
+        {
+          "direction": "south",
+          "targetRoom": "main_hub",
+          "isLocked": false
+        }
+      ]
     }
   ]
 }

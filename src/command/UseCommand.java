@@ -6,9 +6,8 @@ import ui.ConsoleUI;
 import java.util.List;
 
 /**
- * Command implementation for utilizing inventory objects.
- * Supports multi-object interactions (e.g., applying an item to an environmental target)
- * and evaluates conditional locks defined in the domain logic.
+ * Smart Command implementation for utilizing inventory objects.
+ * Automatically scans the room to find a locked exit that matches the used item.
  */
 public class UseCommand implements Command {
     @Override
@@ -22,33 +21,28 @@ public class UseCommand implements Command {
 
         String itemToUse = args.get(0).toLowerCase();
 
-        // 1. Verify possession via the State manager
+        // 1. Check if the player actually possesses the item in their inventory
         if (!gameState.getPlayer().hasItem(itemToUse)) {
             ui.printMessage("You don't have a '" + itemToUse + "' in your inventory.");
             return;
         }
 
-        // 2. Evaluate multi-target interactions (e.g., "use key on door")
-        if (command.getPreposition() != null && command.getSecondArg() != null) {
-            String target = command.getSecondArg().toLowerCase();
-            
-            // Query current node for constrained paths matching the target string
-            Exit exit = gameState.getPlayer().getCurrentRoom().getExitByDirection(target);
-            
-            if (exit != null && exit.isLocked()) {
-                // Dependency check: Does the item ID match the lock's requirement?
-                if (itemToUse.equalsIgnoreCase(exit.getRequiredItemId())) {
-                    exit.setLocked(false);
-                    ui.printMessage("Click! The path to the " + target + " is now unlocked.");
-                } else {
-                    ui.printMessage("The " + itemToUse + " doesn't fit in that lock.");
-                }
-            } else {
-                ui.printMessage("You can't use the " + itemToUse + " on that.");
+        boolean usedSuccessfully = false;
+
+        // 2. SMART CHECK: Iterate through all exits in the current room automatically
+        for (Exit exit : gameState.getPlayer().getCurrentRoom().getExits()) {
+            // Check if the exit is locked and the item matches the required key/item
+            if (exit.isLocked() && itemToUse.equalsIgnoreCase(exit.getRequiredItemId())) {
+                exit.setLocked(false); // Unlock the path
+                ui.printMessage("Click! The door to the " + exit.getDirection() + " is now unlocked!");
+                usedSuccessfully = true;
+                break; // Target found and unlocked, stop searching
             }
-        } else {
-            // Un-targeted item utilization fallback
-            ui.printMessage("You used the " + itemToUse + ". Nothing special happens... yet.");
+        }
+
+        // 3. Fallback: If the item doesn't fit any locked doors in the current room
+        if (!usedSuccessfully) {
+            ui.printMessage("You used the " + itemToUse + ", but nothing happened.");
         }
     }
 }

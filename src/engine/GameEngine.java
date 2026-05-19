@@ -7,6 +7,7 @@ import command.CommandDispatcher;
  * The GameEngine class operates the central game loop.
  * It acts as the primary controller, coordinating user input parsing,
  * command delegation via the dispatcher, and evaluation of end-game conditions.
+ * The hardcoded quit logic has been removed to comply with the project description.
  */
 public class GameEngine {
     private GameState gameState;
@@ -36,13 +37,6 @@ public class GameEngine {
         // The core game loop
         while (!gameState.isGameOver()) {
             String input = ui.getUserInput();
-            
-            // Hardcoded fallback for immediate termination
-            if (input.equals("quit") || input.equals("exit")) {
-                gameState.setGameOver(true);
-                ui.printMessage("Goodbye! Thanks for playing.");
-                continue;
-            }
             
             // Delegate user input to the robust Command subsystem
             dispatcher.dispatch(input, gameState, ui);

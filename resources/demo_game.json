@@ -1,102 +1,133 @@
 {
-  "gameName": "Dungeon Escape: The Awakening",
-  "startingRoom": "dank_cell",
+  "gameName": "The Gallery Mystery",
+  "startingRoom": "entrance",
   "rooms": [
     {
-      "id": "dank_cell",
-      "name": "Dank Cell",
-      "description": "You awaken in a cold, damp cell. The stone walls are covered in moss. There is a rusty door to the north.",
+      "id": "entrance",
+      "name": "Grand Entrance",
+      "description": "A high-ceilinged hall with polished marble floors. A large banner welcomes visitors to the 'Abstract Perspectives' exhibition. The Main Gallery is to the north and the Cafe is to the east.",
       "exits": [
         {
           "direction": "north",
-          "targetRoom": "hallway",
+          "targetRoom": "main_gallery",
+          "isLocked": false
+        },
+        {
+          "direction": "east",
+          "targetRoom": "cafe",
           "isLocked": false
         }
       ]
     },
     {
-      "id": "hallway",
-      "name": "Dark Hallway",
-      "description": "A dimly lit hallway. To the east is a Storage Room, and to the west is an Armory. The main exit is to the north, but a hefty Guard is blocking the way.",
-      "exits": [
-        {
-          "direction": "south",
-          "targetRoom": "dank_cell",
-          "isLocked": false
-        },
-        {
-          "direction": "east",
-          "targetRoom": "storage_room",
-          "isLocked": false
-        },
-        {
-          "direction": "west",
-          "targetRoom": "armory",
-          "isLocked": false
-        },
-        {
-          "direction": "north",
-          "targetRoom": "outside",
-          "isLocked": true,
-          "requiredItem": "freedom_pass"
-        }
-      ],
+      "id": "main_gallery",
+      "name": "Main Gallery",
+      "description": "Minimalist white walls display vibrant oil paintings. A security guard stands alert in the corner. To the west lies the Sculptures Room, and to the north is the private Staff Office.",
       "npcs": [
         {
           "id": "guard_01",
-          "name": "guard",
-          "description": "A tall, mean-looking guard holding a spear. He won't let you pass without a bribe.",
-          "startingState": "angry",
-          "requiredItem": "coin",
+          "name": "Guard",
+          "description": "A focused security guard in a grey uniform.",
           "dialogs": {
-            "angry": "Halt! Nobody passes this door without paying the toll of one gold coin!",
-            "happy": "Thanks for the coin! I unlocked the door for you. Move along."
-          }
+            "strict": "Good day. Please do not touch the artwork. The staff office is off-limits without a badge.",
+            "happy": "I see you have the badge. You may proceed to the office."
+          },
+          "startingState": "strict"
+        }
+      ],
+      "exits": [
+        {
+          "direction": "south",
+          "targetRoom": "entrance",
+          "isLocked": false
+        },
+        {
+          "direction": "west",
+          "targetRoom": "sculptures",
+          "isLocked": false
+        },
+        {
+          "direction": "north",
+          "targetRoom": "staff_office",
+          "isLocked": true,
+          "requiredItem": "badge"
         }
       ]
     },
     {
-      "id": "storage_room",
-      "name": "Storage Room",
-      "description": "A dusty room filled with broken barrels and cobwebs. Something shiny catches your eye in the corner. The hallway is back to the west.",
+      "id": "cafe",
+      "name": "Museum Cafe",
+      "description": "The smell of freshly ground coffee fills the air. It is quiet here. A leather bag is forgotten on one of the chairs.",
       "items": [
         {
-          "id": "coin",
-          "name": "coin",
-          "description": "A shiny gold coin. This could be useful for a bribe."
+          "id": "staff_badge",
+          "name": "badge",
+          "description": "A plastic ID card with the museum logo. It belongs to the senior curator."
         }
       ],
       "exits": [
         {
           "direction": "west",
-          "targetRoom": "hallway",
+          "targetRoom": "entrance",
           "isLocked": false
         }
       ]
     },
     {
-      "id": "armory",
-      "name": "Abandoned Armory",
-      "description": "Old weapon racks line the walls, mostly empty. The only way out is east back to the hallway.",
-      "items": [
+      "id": "sculptures",
+      "name": "Sculptures Room",
+      "description": "Natural light streams from the skylights onto various bronze and stone figures. An elderly woman is examining a bust. The Main Gallery is back to the east. There is a large exit to the south leading outside.",
+      "npcs": [
         {
-          "id": "sword",
-          "name": "sword",
-          "description": "A rusty iron sword. It's dull, but better than nothing."
+          "id": "curator_01",
+          "name": "Curator",
+          "description": "An elegant woman with sharp eyes and a welcoming smile.",
+          "requiredItem": "catalog",
+          "dialogs": {
+            "neutral": "Welcome to our collection. I'm looking for the exhibition catalog; it's quite rare.",
+            "happy": "Thank you for finding the catalog! You have a keen eye for detail. I'll unlock the exit for you."
+          },
+          "startingState": "neutral"
         }
       ],
       "exits": [
         {
           "direction": "east",
-          "targetRoom": "hallway",
+          "targetRoom": "main_gallery",
+          "isLocked": false
+        },
+        {
+          "direction": "south",
+          "targetRoom": "outside",
+          "isLocked": true,
+          "requiredItem": "catalog"
+        }
+      ]
+    },
+    {
+      "id": "staff_office",
+      "name": "Staff Office",
+      "description": "A cluttered office filled with books, magnifying glasses, and shipment crates. On the desk lies a thick, bound book.",
+      "items": [
+        {
+          "id": "gallery_catalog",
+          "name": "catalog",
+          "description": "A rare, leather-bound catalog of the current exhibition."
+        }
+      ],
+      "exits": [
+        {
+          "direction": "south",
+          "targetRoom": "main_gallery",
           "isLocked": false
         }
       ]
     },
     {
       "id": "outside",
-      "name": "Freedom",
-      "description": "You step outside and breathe the fresh air! The sun is shining. You have escaped!"
+      "name": "Outside",
+      "description": "You step out of the gallery, having solved the mystery. You breathe in the fresh air... YOU WIN!",
+      "exits": []
     }
   ]
 }

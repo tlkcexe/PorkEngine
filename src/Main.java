@@ -37,7 +37,7 @@ public class Main {
         CommandParser parser = new CommandParser(synMap);
         CommandRegistry cmdRegistry = new CommandRegistry();
 
-        // Registering available commands dynamically
+        // Registering available core commands dynamically
         cmdRegistry.register("go", new GoCommand());
         cmdRegistry.register("look", new LookCommand());
         cmdRegistry.register("take", new TakeCommand());
@@ -46,6 +46,15 @@ public class Main {
         cmdRegistry.register("use", new UseCommand());
         cmdRegistry.register("talk", new TalkCommand());
         cmdRegistry.register("give", new GiveCommand());
+        
+        // Registering newly added feature commands
+        cmdRegistry.register("quit", new QuitCommand());
+        cmdRegistry.register("exit", new QuitCommand());
+        cmdRegistry.register("history", new HistoryCommand());
+        cmdRegistry.register("difficulty", new DifficultyCommand());
+        cmdRegistry.register("state", new StateCommand());
+        cmdRegistry.register("save", new SaveCommand());
+        cmdRegistry.register("load", new LoadCommand());
 
         CommandDispatcher dispatcher = new CommandDispatcherImpl(parser, cmdRegistry);
 

@@ -32,6 +32,8 @@ public class CommandDispatcherImpl implements CommandDispatcher {
 
         // 3. Execute dynamically if mapped, otherwise invoke fallback response
         if (command != null) {
+            // Save valid command string to game state history
+            gameState.addCommandToHistory(input);
             command.execute(parsed, gameState, ui);
         } else {
             ui.printMessage("I don't know how to '" + parsed.getVerb() + "'.");
